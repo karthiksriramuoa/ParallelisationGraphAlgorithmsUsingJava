@@ -1,0 +1,126 @@
+package com.parallel;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Scanner;
+import pt.runtime.TaskID;
+import pt.runtime.TaskIDGroup;
+
+public class PrimParaTask {
+    // Number of vertices in the graph
+    // A utility function to find the vertex with minimum key
+    // value, from the set of vertices not yet included in MST
+	public int minKey(List<Integer> keyList, List<Boolean> mstSetList){
+    	
+        // Initialize min value
+        int min = Integer.MAX_VALUE, min_index = -1;
+        Iterator<Integer> iterator = keyList.iterator();
+//        ParIterator<Integer> iterator = ParIteratorFactory.createParIterator(keyList, 2);
+        int v = 0;
+        while(iterator.hasNext()) {
+        	iterator.next();
+        	if(mstSetList.get(v) == Boolean.FALSE && keyList.get(v) < min) {
+        		min = keyList.get(v);
+        		min_index = v;
+        	}
+        	v++;
+        }
+        return min_index;
+    }
+ 
+    void printMST(List parentList, int n, List<List> graphList){
+        System.out.println("Edge   Weight");
+        for (int i = 1; i < n; i++)
+        	System.out.println(parentList.get(i)+" - "+ i+"    "+
+                    graphList.get(i).get((int) parentList.get(i)));
+    }
+    
+    void primMST(List<List>graphList, int vertices){
+    	Integer[] integers = new Integer[vertices];
+    	Integer[] maxIntegers = new Integer[vertices];
+    	Boolean[] booleans = new Boolean[vertices];
+    	Arrays.fill(integers, 0);
+    	Arrays.fill(maxIntegers, Integer.MAX_VALUE);
+    	Arrays.fill(booleans, Boolean.FALSE);
+    	List<Integer> parentList = Arrays.asList(integers);
+    	List<Integer> keyList = Arrays.asList(maxIntegers);
+    	
+    	
+        List<Boolean> mstSetList =  Arrays.asList(booleans);
+        Iterator<Boolean> iterator = mstSetList.iterator();
+        keyList.set(0, 0);
+        parentList.set(0, -1);
+        TaskID id = populateKeysQueue(mstSetList, graphList, keyList, parentList, vertices);
+    	TaskIDGroup sk = new TaskIDGroup(1);
+    	sk.add(id);
+    	try {
+			sk.waitTillFinished();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+        // print the constructed MST
+        printMST(parentList, vertices, graphList);
+    }
+    
+    IO_TASK public void populateKeysQueue(List<Boolean> mstSetList, List<List> graphList,  List<Integer> keyList, List<Integer> parentList, int vertices) {
+    	int count = 0;
+    	try {
+    		while(count<vertices-1) {
+            for(Boolean boolean1 : mstSetList) {
+            	int u = minKey(keyList, mstSetList);
+            	mstSetList.set(u, Boolean.TRUE);
+            	int v = 0;
+            	for(Integer integer2 : keyList) {
+            		if ((int)graphList.get(u).get(v) !=0 && mstSetList.get(v) == Boolean.FALSE &&
+                			(int)graphList.get(u).get(v) <  keyList.get(v)){
+            		parentList.set(v, u);
+            		keyList.set(v, (int)graphList.get(u).get(v));
+            		}
+            		v++;
+            	}
+            	count++;
+            }
+    	}
+    		
+    	}catch(Exception e) {
+    		e.printStackTrace();
+    	}
+    }
+    
+    public static void main (String[] args)
+    {
+    	int numVertices = 0;
+    	Scanner scanner = null;
+    	List<List> graphList = null;
+    	PrimParaTask t;
+    	try {
+    		t = new PrimParaTask();
+    		scanner = new Scanner(System.in);
+    		System.out.println("Please enter the number of vertices");
+    		numVertices = scanner.nextInt();
+    		graphList = new ArrayList<List>();
+        	for(int i=0; i<numVertices; i++) {
+        		List<Integer> elements1 = new ArrayList<Integer>();
+        		for(int j=0; j<numVertices; j++) {
+        			Double d = Math.floor(Math.random()*10);
+        			elements1.add(d.intValue());
+        		}
+        		graphList.add(elements1);
+        		elements1 = null;
+        		
+        	}
+        	long startTime = System.nanoTime();
+        	t.primMST(graphList, numVertices);
+        	long endTime   = System.nanoTime();
+        	long totalTime = endTime - startTime;
+        	double milliseconds = (double)totalTime / 1000000.0;
+        	System.out.println(milliseconds);
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("Please enter a number");
+			// TODO: handle exception
+		}
+    	
+    }
+}
