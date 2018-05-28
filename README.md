@@ -1,13 +1,11 @@
 Project Name - ParallelisationGraphAlgorithmsUsingJava
 
-Dijkstra's Algorithm
-
-To run Djikstra's Algorithm, you need to follow these steps below:
-
 Installation
   1. Open console
   2. Navigate in console to folder
   3. type in "git clone https://github.com/karthiksriramuoa/ParallelisationGraphAlgorithmsUsingJava.git" and press enter
+
+To run Djikstra's Algorithm, you need to follow these steps below:
 
 Exectution
   1. Open eclipse
@@ -15,7 +13,7 @@ Exectution
   3. Run on eclipse
   4. Input number of vertices and number of threads when prompted
 
-FLoyd's Algorithm
+FLoyd's Algorithm and Prim's Algorithm
 
 To run FLoyd's Algorithm, you need to follow these steps below:
 
